@@ -29,7 +29,11 @@ if selected_author != 'Choose an author':
     if not author_books.empty:
         st.write("### Books by this author:")
         for _, row in author_books.iterrows():
-            st.image(row['image'], width=100)
-            st.markdown(f"[More about this book]({row['infoLink']})")
+            if pd.notna(row['image']) and isinstance(row['image'], str):
+                st.image(row['image'], width=100)
+                st.markdown(f"[More about this book]({row['infoLink']})")
+            else:
+                st.write("No image available")
     else:
         st.write("No books found for this author.")
+
