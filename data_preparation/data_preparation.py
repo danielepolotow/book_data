@@ -35,4 +35,4 @@ author_sentiment = merged_data.groupby('authors').agg(
 ).reset_index()
 
 
-author_sentiment.to_csv('data/author_sentiment.csv', index=False)
+author_sentiment.to_csv('author_sentiment.csv', index=False)
