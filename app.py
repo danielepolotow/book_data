@@ -4,6 +4,8 @@ from utils.sentiment_to_stars import sentiment_to_stars, display_stars
 
 
 author_sentiment = pd.read_csv('data_preparation/author_sentiment.csv')
+books_data = pd.read_csv('data_preparation/preprocessed_books_data.csv')
+
 sorted_authors = author_sentiment.sort_values(by='Number_of_Reviews', ascending=False)
 
 
@@ -23,3 +25,11 @@ if selected_author != 'Choose an author':
     st.write(
         f'The average sentiment for author **{selected_author}** is **{avg_sentiment:.2f}**, based on **{num_reviews}** reviews.')
 
+    author_books = books_data[books_data['authors'] == selected_author]
+    if not author_books.empty:
+        st.write("### Books by this author:")
+        for _, row in author_books.iterrows():
+            st.image(row['image'], width=100)
+            st.markdown(f"[More about this book]({row['infoLink']})")
+    else:
+        st.write("No books found for this author.")
