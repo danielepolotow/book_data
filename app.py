@@ -22,18 +22,28 @@ if selected_author != 'Choose an author':
     star_visual = display_stars(stars)
 
     st.markdown(f"### {star_visual}")
-    st.write(
-        f'The average sentiment for author **{selected_author}** is **{avg_sentiment:.2f}**, based on **{num_reviews}** reviews.')
+    st.markdown(f"""
+    <div style='font-size: 20px;'>
+        The average sentiment for author <b>{selected_author}</b> is <b>{avg_sentiment:.2f}</b>, based on <b>{num_reviews}</b> reviews.
+    </div>
+    """, unsafe_allow_html=True)
 
     author_books = books_data[books_data['authors'] == selected_author]
+
+    author_books = author_books.dropna(subset=['image', 'infoLink'])
+    author_books = author_books[author_books['image'].apply(lambda x: isinstance(x, str) and x.strip() != '')]
+    author_books = author_books[author_books['infoLink'].apply(lambda x: isinstance(x, str) and x.strip() != '')]
+
     if not author_books.empty:
         st.write("### Books by this author:")
-        for _, row in author_books.iterrows():
-            if pd.notna(row['image']) and isinstance(row['image'], str):
-                st.image(row['image'], width=100)
-                st.markdown(f"[More about this book]({row['infoLink']})")
-            else:
-                st.write("No image available")
+        author_books = author_books.head(9)
+        columns = 3
+        for index in range(0, len(author_books), columns):
+            cols = st.columns(columns)
+            for col, (_, row) in zip(cols, author_books.iloc[index:index + columns].iterrows()):
+                col.image(row['image'], width=100)
+                col.markdown(
+                    f"[More about this book]({row['infoLink']})")
     else:
         st.write("No books found for this author.")
 
