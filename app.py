@@ -6,11 +6,12 @@ from utils.sentiment_to_stars import sentiment_to_stars, display_stars
 author_sentiment = pd.read_csv('data_preparation/author_sentiment.csv')
 books_data = pd.read_csv('data_preparation/preprocessed_books_data.csv')
 reviews_data = pd.read_csv('data_preparation/relevant_reviews_per_author.csv')
+sentiment_distribution = pd.read_csv('data_preparation/author_sentiment_distribution.csv')
 
 sorted_authors = author_sentiment.sort_values(by='Number_of_Reviews', ascending=False)
 
 
-st.title('Author Sentiment Analysis')
+st.title('Editor Assistant')
 
 author_list = ['Choose an author'] + sorted_authors['authors'].tolist()
 selected_author = st.selectbox('Select an author:', author_list)
@@ -19,16 +20,48 @@ if selected_author != 'Choose an author':
     avg_sentiment = sorted_authors[sorted_authors['authors'] == selected_author]['Average_Sentiment'].values[0]
     num_reviews = sorted_authors[sorted_authors['authors'] == selected_author]['Number_of_Reviews'].values[0]
 
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("### Stars")
     stars = sentiment_to_stars(avg_sentiment)
     star_visual = display_stars(stars)
-
     st.markdown(f"### {star_visual}")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("### Sentiment Analysis")
     st.markdown(f"""
     <div style='font-size: 20px;'>
         The average sentiment for author <b>{selected_author}</b> is <b>{avg_sentiment:.2f}</b>, based on <b>{num_reviews}</b> reviews.
     </div>
     """, unsafe_allow_html=True)
 
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("### What users think about this author")
+    author_data = sentiment_distribution[sentiment_distribution['authors'] == selected_author]
+    if not author_data.empty:
+        author_data = author_data.iloc[0]  # Ensure we are using the first (and should be only) row of filtered data
+        st.markdown(f"The author **{selected_author}** has the following review distribution:")
+        st.markdown(f"- **Very Good:** {author_data['very good']:.2f}%")
+        st.markdown(f"- **Good:** {author_data['good']:.2f}%")
+        st.markdown(f"- **Neutral:** {author_data['neutral']:.2f}%")
+        st.markdown(f"- **Bad:** {author_data['bad']:.2f}%")
+        st.markdown(f"- **Very Bad:** {author_data['very bad']:.2f}%")
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("### Recommendation")
+        positive_reviews = author_data['very good'] + author_data['good']
+        negative_reviews = author_data['bad'] + author_data['very bad']
+
+        if positive_reviews > negative_reviews:
+            st.info(
+                "This is a recommended author for your publishing business. Most of the reviews are positive. You "
+                "should acquire the author's work!")
+        elif negative_reviews > positive_reviews:
+            st.error("This is not a recommended author. Most of the reviews are negative.")
+    else:
+        st.warning("No sentiment distribution data available for this author.")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("### Reviews")
     author_reviews = reviews_data[reviews_data['authors'] == selected_author]
     positive_reviews = author_reviews[author_reviews['sentiment_class'] == 'positive']
     negative_reviews = author_reviews[author_reviews['sentiment_class'] == 'negative']
@@ -57,6 +90,7 @@ if selected_author != 'Choose an author':
     author_books = author_books[author_books['infoLink'].apply(lambda x: isinstance(x, str) and x.strip() != '')]
 
     if not author_books.empty:
+        st.markdown("<br>", unsafe_allow_html=True)
         st.write("### Books by this author:")
         author_books = author_books.head(9)
         columns = 3
