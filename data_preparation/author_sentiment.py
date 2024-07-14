@@ -29,6 +29,7 @@ tqdm.pandas(desc="Calculating sentiment")
 merged_data['sentiment'] = merged_data['review'].progress_apply(get_sentiment)
 
 merged_data = merged_data.explode('authors')
+
 author_sentiment = merged_data.groupby('authors').agg(
     Average_Sentiment=('sentiment', 'mean'),
     Number_of_Reviews=('sentiment', 'size')
@@ -36,3 +37,6 @@ author_sentiment = merged_data.groupby('authors').agg(
 
 
 author_sentiment.to_csv('author_sentiment.csv', index=False)
+
+merged_data.to_csv('books_details.csv', index=False)
+

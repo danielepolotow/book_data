@@ -1,5 +1,4 @@
 def sentiment_to_stars(sentiment):
-    # Normalize sentiment from -1 to 1 into a 0 to 5 scale
     stars = (sentiment + 1) * 2.5
     return round(stars)
 
