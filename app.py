@@ -3,10 +3,10 @@ import streamlit as st
 from utils.sentiment_to_stars import sentiment_to_stars, display_stars
 
 
-author_sentiment = pd.read_csv('data_preparation/author_sentiment.csv')
-books_data = pd.read_csv('data_preparation/preprocessed_books_data.csv')
-reviews_data = pd.read_csv('data_preparation/relevant_reviews_per_author.csv')
-sentiment_distribution = pd.read_csv('data_preparation/author_sentiment_distribution.csv')
+author_sentiment = pd.read_csv('data_preparation/processed_data/author_sentiment.csv')
+books_data = pd.read_csv('data_preparation/processed_data/preprocessed_books_data.csv')
+reviews_data = pd.read_csv('data_preparation/processed_data/relevant_reviews_per_author.csv')
+sentiment_distribution = pd.read_csv('data_preparation/processed_data/author_sentiment_distribution.csv')
 
 sorted_authors = author_sentiment.sort_values(by='Number_of_Reviews', ascending=False)
 
@@ -38,7 +38,7 @@ if selected_author != 'Choose an author':
     st.markdown("### What users think about this author")
     author_data = sentiment_distribution[sentiment_distribution['authors'] == selected_author]
     if not author_data.empty:
-        author_data = author_data.iloc[0]  # Ensure we are using the first (and should be only) row of filtered data
+        author_data = author_data.iloc[0]
         st.markdown(f"The author **{selected_author}** has the following review distribution:")
         st.markdown(f"- **Very Good:** {author_data['very good']:.2f}%")
         st.markdown(f"- **Good:** {author_data['good']:.2f}%")
@@ -61,7 +61,7 @@ if selected_author != 'Choose an author':
         st.warning("No sentiment distribution data available for this author.")
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("### Reviews")
+    st.markdown("### Check out some of the user reviews")
     author_reviews = reviews_data[reviews_data['authors'] == selected_author]
     positive_reviews = author_reviews[author_reviews['sentiment_class'] == 'positive']
     negative_reviews = author_reviews[author_reviews['sentiment_class'] == 'negative']

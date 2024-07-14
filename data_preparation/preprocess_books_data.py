@@ -9,8 +9,8 @@ def preprocess_books_data(file_path):
 
     books_data_exploded = books_data.explode('authors')
 
-    books_data_exploded.to_csv('preprocessed_books_data.csv', index=False)
+    books_data_exploded.to_csv('processed_data/preprocessed_books_data.csv', index=False)
 
 
-preprocess_books_data('../data/books_data.csv')
+preprocess_books_data('../original_data/books_data.csv')
 

@@ -4,8 +4,8 @@ from textblob import TextBlob
 from tqdm import tqdm
 
 
-book_data = pd.read_csv('../data/books_data.csv')
-book_rating = pd.read_csv('../data/Books_rating.csv')
+book_data = pd.read_csv('../original_data/books_data.csv')
+book_rating = pd.read_csv('../original_data/Books_rating.csv')
 
 book_data['authors'] = book_data['authors'].fillna('[]')
 book_data['authors'] = book_data['authors'].apply(ast.literal_eval)
@@ -36,7 +36,7 @@ author_sentiment = merged_data.groupby('authors').agg(
 ).reset_index()
 
 
-author_sentiment.to_csv('author_sentiment.csv', index=False)
+author_sentiment.to_csv('processed_data/author_sentiment.csv', index=False)
 
-merged_data.to_csv('books_details.csv', index=False)
+merged_data.to_csv('processed_data/books_details.csv', index=False)
 

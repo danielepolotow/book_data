@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-book_details = pd.read_csv('books_details.csv')
+book_details = pd.read_csv('processed_data/books_details.csv')
 
 book_details = book_details.drop_duplicates(subset=['text'], keep='first')
 book_details = book_details[book_details['profileName'].notna() & book_details['authors'].notna()]
@@ -50,4 +50,4 @@ def calculate_percentage(group):
 
 author_sentiment_distribution = book_details.groupby('authors').apply(calculate_percentage).reset_index()
 
-author_sentiment_distribution.to_csv('author_sentiment_distribution.csv', index=False)
+author_sentiment_distribution.to_csv('processed_data/author_sentiment_distribution.csv', index=False)

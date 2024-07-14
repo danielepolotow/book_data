@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-book_details = pd.read_csv('books_details.csv')
+book_details = pd.read_csv('processed_data/books_details.csv')
 
 book_details = book_details.drop_duplicates(subset=['text'], keep='first')
 
@@ -37,4 +37,4 @@ relevant_reviews = book_details.groupby('authors').apply(get_relevant_reviews).r
 relevant_reviews = relevant_reviews[['profileName', 'Title', 'summary', 'text', 'authors', 'sentiment_class']]
 
 if not relevant_reviews.empty:
-    relevant_reviews.to_csv('relevant_reviews_per_author.csv', index=False)
+    relevant_reviews.to_csv('processed_data/relevant_reviews_per_author.csv', index=False)
