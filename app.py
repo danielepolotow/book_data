@@ -5,6 +5,7 @@ from utils.sentiment_to_stars import sentiment_to_stars, display_stars
 
 author_sentiment = pd.read_csv('data_preparation/author_sentiment.csv')
 books_data = pd.read_csv('data_preparation/preprocessed_books_data.csv')
+reviews_data = pd.read_csv('data_preparation/relevant_reviews_per_author.csv')
 
 sorted_authors = author_sentiment.sort_values(by='Number_of_Reviews', ascending=False)
 
@@ -28,8 +29,29 @@ if selected_author != 'Choose an author':
     </div>
     """, unsafe_allow_html=True)
 
-    author_books = books_data[books_data['authors'] == selected_author]
+    author_reviews = reviews_data[reviews_data['authors'] == selected_author]
+    positive_reviews = author_reviews[author_reviews['sentiment_class'] == 'positive']
+    negative_reviews = author_reviews[author_reviews['sentiment_class'] == 'negative']
 
+    if not positive_reviews.empty:
+        with st.expander("Positive Reviews"):
+            for index, review in positive_reviews.iterrows():
+                st.write(f"**{review['profileName']}** wrote:")
+                st.write(f"**Summary:** {review['summary']}")
+                st.write(f"**Review:** {review['text']}")
+    else:
+        st.warning("No relevant positive reviews for this author.")
+
+    if not negative_reviews.empty:
+        with st.expander("Negative Reviews"):
+            for index, review in negative_reviews.iterrows():
+                st.write(f"**{review['profileName']}** wrote:")
+                st.write(f"**Summary:** {review['summary']}")
+                st.write(f"**Review:** {review['text']}")
+    else:
+        st.warning("No relevant negative reviews for this author.")
+
+    author_books = books_data[books_data['authors'] == selected_author]
     author_books = author_books.dropna(subset=['image', 'infoLink'])
     author_books = author_books[author_books['image'].apply(lambda x: isinstance(x, str) and x.strip() != '')]
     author_books = author_books[author_books['infoLink'].apply(lambda x: isinstance(x, str) and x.strip() != '')]
