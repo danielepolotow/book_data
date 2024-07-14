@@ -1,6 +1,9 @@
 import pandas as pd
 
+
 book_details = pd.read_csv('books_details.csv')
+
+book_details = book_details.drop_duplicates(subset=['text'], keep='first')
 
 book_details = book_details[book_details['profileName'].notna() & book_details['authors'].notna()]
 
@@ -23,9 +26,10 @@ book_details = book_details[(book_details['sentiment_class'] != 'neutral') & (bo
 
 
 def get_relevant_reviews(group):
-    top_reviews = group.nlargest(5, 'sentiment')
-    bottom_reviews = group.nsmallest(5, 'sentiment')
-    return pd.concat([top_reviews, bottom_reviews])
+    top_reviews = group[group['sentiment_class'] == 'positive'].nlargest(5, 'sentiment')
+    bottom_reviews = group[group['sentiment_class'] == 'negative'].nsmallest(5, 'sentiment')
+
+    return pd.concat([top_reviews, bottom_reviews]).drop_duplicates(subset=['profileName', 'Title', 'summary', 'text'])
 
 
 relevant_reviews = book_details.groupby('authors').apply(get_relevant_reviews).reset_index(drop=True)
